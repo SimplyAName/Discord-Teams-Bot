@@ -3,8 +3,11 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 
 client.on('message', msg => {
+	
+	//Check to see if message starts with !
 	if (!msg.content.startsWith('!') || msg.author.bot) return;
 
+	//Split the message into commands
 	const args = msg.content.slice(1).split(/ +/);
 	const command = args.shift().toLowerCase();
 
@@ -72,6 +75,8 @@ client.on('message', msg => {
 		});
 	}
   
+	//Split the team into two differnt teams
+	//TODO: Just get half of the suffled array
 	function splitTeams(people) {
 
 		let shuffledPeople = shuffle(people);
@@ -102,6 +107,7 @@ client.on('message', msg => {
 
 	}
 
+	//Generate output string for team
 	function generateOutput(teams) {
 		
 		let message = "Team 1: \n";
@@ -119,6 +125,7 @@ client.on('message', msg => {
 		return(message);
 	}
 
+	//Shuffle array of players in main channel
 	function shuffle(array) {
 	  let currentIndex = array.length, temporaryValue, randomIndex;
 
