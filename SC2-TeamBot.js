@@ -1,162 +1,137 @@
+require('dotenv').config();
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-client.on('ready', () => {
-	console.log(`Logged in as ${client.user.tag}!`);
-});
-
 client.on('message', msg => {
-    if (!msg.content.startsWith('!') || msg.author.bot) return;
+	if (!msg.content.startsWith('!') || msg.author.bot) return;
 
-    const args = msg.content.slice(1).split(/ +/);
-    const command = args.shift().toLowerCase();
+	const args = msg.content.slice(1).split(/ +/);
+	const command = args.shift().toLowerCase();
 
-    console.log(command);
+	console.log(command);
+	
+	//Set this to team 1's voice channel ID channel2Id
+	const channel1 = client.channels.get(process.env.TEAM_1_CHANNEL_ID);
+
+	//Set this to team 2's voice channel ID
+	const channel2 = client.channels.get(process.env.TEAM_2_CHANNEL_ID);
+
+	//Change the .get() to your inital voice channel ID
+	const mainVoiceChannel = client.channels.get(process.env.MAIN_CHANNEL_ID);
+	
+	const people = [];
+
+	mainVoiceChannel.members.forEach(function(guildMember, guildMemberId) {
+		people.push(guildMemberId);
+	});
 
 	if (command === 'ping') {
 
-        msg.reply('Pong!');
+		msg.reply('Pong!');
 
-	}else if(command === 'createteam' || command === "ct") {
+	} else if (command === 'createteam' || command === "ct") {
+	  
+		let teams = splitTeams(people);
+
+		let message = generateOutput(teams);
 		
-		//Change the .get() to your inital voice channel ID
-        const channel = client.channels.get('202516109625131009');
-
-        let members = channel.members;
+		teams.team1.forEach((user) => {
+			let currentUser = members.find(currentUser => currentUser.id === user.id);
+			
+			currentUser.setVoiceChannel(channel1Id);
+		});
 		
-		let teamsMessage = "";
+		teams.team2.forEach((user) => {
+			let members = mainVoiceChannel.members;
+			
+			let currentUser = members.find(currentUser => currentUser.id === user.id);
+			
+			currentUser.setVoiceChannel(channel2Id);
+		});
+		
+		msg.channel.send(message);
 
-        const people = [];
+	} else if (command === "createteam-novoice" || command === "ct-nv") {
 
-        members.forEach(function(guildMember, guildMemberId) {
-            console.log(guildMemberId, guildMember.user.username);
-            people.push(guildMemberId);
-        });
-
-        let shuffledPeople = shuffle(people);
-
-        var x = true;
-        var y = 0;
-
-        while(y < 4){
-            let currentPerson = members.find(currentPerson => currentPerson.id === shuffledPeople[y]);
-
-            if(y < 2){
-                //Team 1
-                if(x === true) {
-                    console.log("Team 1:");
-                    teamsMessage += 'Team 1: \n';
-                }
+		let teams = splitTeams(people);
 				
-				//Set this to team 1's voice channel ID
-                currentPerson.setVoiceChannel('577879760747626527');
-            }else{
-                //Team 2
-                if(x === true) {
-                    console.log("Team 2:");
-                    teamsMessage += 'Team 2: \n';
-                }
-				
-				//Set this to team 2's voice channel ID
-                currentPerson.setVoiceChannel('577879779793960961');
-            }
-
-            if(x) {
-				console.log('Macro: ' + currentPerson.displayName);
-                teamsMessage += 'Macro: ' + currentPerson.displayName + "\n";
-                x = false;
-            }else{
-                console.log('Micro: ' + currentPerson.displayName);
-                teamsMessage += 'Micro: ' + currentPerson.displayName + "\n";
-                x = true;
-            }
-            y++;
-        }
+		let message = generateOutput(teams);
 		
-		msg.channel.send(teamsMessage);
+		msg.channel.send(message);
 
-	} else if(command === "createteam-novoice" || command === "ct-nv"){
+	} else if (command === "return") {
+
+		channel1.members.forEach(function(member) {
+			//Change this to your voice channel ID that you want the player to be returned to. This would normally be the inital one for easy of use
+			member.setVoiceChannel(process.env.MAIN_CHANNEL_ID);
+		});
 		
-		//Change the .get() to your inital voice channel ID
-        const channel = client.channels.get('202516109625131009');
+		//Same again here. Best to use the same ID as above.
+		channel2.members.forEach(function(member) {
+			member.setVoiceChannel(process.env.MAIN_CHANNEL_ID);
+		});
+	}
+  
+	function splitTeams(people) {
 
-        let members = channel.members;
-		
-		let teamsMessage = "";
+		let shuffledPeople = shuffle(people);
 
-        const people = [];
+		let team1 = [];
+		let team2 = [];
 
-        members.forEach(function(guildMember, guildMemberId) {
-            console.log(guildMemberId, guildMember.user.username);
-            people.push(guildMemberId);
-        });
+		var x = true;
+		var y = 0;
 
-        let shuffledPeople = shuffle(people);
-
-        var x = true;
-        var y = 0;
-
-        while(y < 4){
-            let currentPerson = members.find(currentPerson => currentPerson.id === shuffledPeople[y]);
-
-            if(y < 2){
-                //Team 1
-                if(x === true) {
-                    console.log("Team 1:");
-                    teamsMessage += 'Team 1: \n';
-                }
-            }else{
-                //Team 2
-                if(x === true) {
-                    console.log("Team 2:");
-                    teamsMessage += 'Team 2: \n';
-                }
+		while (y < shuffledPeople.length) {
+			let currentPerson = mainVoiceChannel.members.find(currentPerson => currentPerson.id === shuffledPeople[y]);
+			
+			if (x === true) {
+				//Team 1
+				team1.push(currentPerson);
+				x = false;
+			} else {
+				//Team 2
+				team2.push(currentPerson);
+				x = true;
 			}
 
-            if(x) {
-				console.log('Macro: ' + currentPerson.displayName);
-                teamsMessage += 'Macro: ' + currentPerson.displayName + "\n";
-                x = false;
-            }else{
-                console.log('Micro: ' + currentPerson.displayName);
-                teamsMessage += 'Micro: ' + currentPerson.displayName + "\n";
-                x = true;
-            }
-            y++;
-        }
-		
-		msg.channel.send(teamsMessage);
+			y++;
+		}
 
-    }else if(command === "return"){
-		
-		//Set this to team 1's voice channel ID
-        const channel1 = client.channels.get('577879760747626527');
-		//Set this to team 2's voice channel ID
-        const channel2 = client.channels.get('577879779793960961');
+		return({'team1': team1, 'team2': team2}); 
 
-        channel1.members.forEach(function(member) {
-			//Change this to your voice channel ID that you want the player to be returned to. This would normally be the inital one for easy of use
-            member.setVoiceChannel('202516109625131009');
-        });
-			//Same again here. Best to use the same ID as above.
-        channel2.members.forEach(function(member) {
-            member.setVoiceChannel('202516109625131009');
-        });
-    }
+	}
+
+	function generateOutput(teams) {
+		
+		let message = "Team 1: \n";
+		
+		teams.team1.forEach((user) => {
+			message += (user.displayName + "\n");
+		});
+		
+		message += "\nTeam 2: \n";
+		
+		teams.team2.forEach((user) => {
+			message += (user.displayName + "\n");
+		});
+		
+		return(message);
+	}
+
+	function shuffle(array) {
+	  let currentIndex = array.length, temporaryValue, randomIndex;
+
+	  while (0 !== currentIndex) {
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	  }
+
+	  return array;
+	}
 });
 
-client.login('YOUR-KEY-HERE');
-
-function shuffle(array) {
-    let currentIndex = array.length, temporaryValue, randomIndex;
-
-    while (0 !== currentIndex) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-    }
-
-    return array;
-}
+client.login(process.env.DISCORD_KEY);
