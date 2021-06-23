@@ -2,15 +2,23 @@
   "name": "sc2-discord-bot",
   "version": "1.0.0",
   "description": "SC2 bot for creating teams for archon and putting people in their own channels",
-  "main": "SC2-TeamBot.js",
+  "private": true,
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node .",
+    "hot-reload": "nodemon ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.6.4",
+    "@replit/database": "^2.0.1",
+    "discord.js": "^12.5.3",
+    "discord.js-commando": "^0.12.3",
     "dotenv": "^8.2.0",
+    "envy": "^2.0.0"
+  },
+  "devDependencies": {
     "eslint": "^5.16.0"
   }
 }
