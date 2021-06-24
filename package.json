@@ -1,5 +1,5 @@
 {
-  "name": "sc2-discord-bot",
+  "name": "teams-bot",
   "version": "1.0.0",
   "description": "SC2 bot for creating teams for archon and putting people in their own channels",
   "private": true,

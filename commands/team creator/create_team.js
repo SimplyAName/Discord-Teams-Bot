@@ -5,7 +5,7 @@ module.exports = class CreateTeamsCommand extends Command {
 		super(client, {
 			name: 'create_team',
 			aliases: ['ct', 'createteam'],
-			group: 'basic',
+			group: 'team creator',
 			memberName: 'create_team',
 			description: 'Creates a team from your current voice channel',
 			examples: ['createTeam', 'ct'],
