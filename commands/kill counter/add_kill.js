@@ -9,7 +9,7 @@ module.exports = class CreateTeamsCommand extends Command {
 			aliases: ['ak', 'addkill'],
 			group: 'kill counter',
 			memberName: 'add_kill',
-			description: 'Show the team kill count scoreboard.',
+			description: 'Add a team kill to the scoreboard.',
 			examples: ['ak', 'add_kill', 'addkill'],
 			args: [
 				{
